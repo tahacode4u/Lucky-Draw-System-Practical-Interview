@@ -105,12 +105,24 @@
         // probability chart code start
         var ctp = document.getElementById('probabilityChart').getContext('2d');
         var probabiltyChart = new Chart(ctp, {
+            plugins: [ChartDataLabels],
             type: 'doughnut',
             data: {
                 labels: @json($probabilityChartData['labels']),
                 datasets: [{
                     data: @json($probabilityChartData['data']),
                 }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    datalabels: {
+                        color: 'white',
+                        formatter: function (value, context) {
+                            return context.chart.data.labels[context.dataIndex];
+                        }
+                    },
+                },
             }
         });
         // probability chart code end
@@ -118,12 +130,24 @@
         // awarded chart code start
         var cta = document.getElementById('awardedChart').getContext('2d');
         var awardedChart = new Chart(cta, {
+            plugins: [ChartDataLabels],
             type: 'doughnut',
             data: {
                 labels: @json($awardedChartData['labels']),
                 datasets: [{
                     data: @json($awardedChartData['data']),
                 }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    datalabels: {
+                        color: 'white',
+                        formatter: function (value, context) {
+                            return context.chart.data.labels[context.dataIndex];
+                        }
+                    },
+                },
             }
         });
         // awarded chart code end

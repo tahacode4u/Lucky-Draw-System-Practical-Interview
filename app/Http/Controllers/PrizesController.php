@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 
 use App\Models\Prize;
+use App\Models\AwardedPrizes;
 use App\Rules\ValidateProbability;
 use App\Http\Requests\PrizeRequest;
 use Illuminate\Http\Request;
@@ -27,8 +28,11 @@ class PrizesController extends Controller
         // probability code start
         $prizes = Prize::all();
 
+
         if (!empty($prizes)) {
-            foreach ($prizes as $prize) {
+            foreach ($prizes as $k => $prize) {
+                $awardValue = AwardedPrizes::where('prizes_id', $prize->id)->where('is_active', 1)->get()->value('awarded');
+                $prizes[$k]['awarded'] = ($awardValue > 0) ? $awardValue:0;
                 $probabilityLabels[] = $prize['title'] ."(".$prize['probability'].")";
                 $probabilityData[] = $prize['probability'];
             }
@@ -36,17 +40,17 @@ class PrizesController extends Controller
         $probabilityChartData = ['labels' => $probabilityLabels, 'data' => $probabilityData];
         // probability code start
 
-        //awarded code start
-        $awardedLabels = $prizes->pluck('title');
-        $awardedData = ['12.5', '5.8', '35', '20.2', '16.5', '10'];
-        $awardedChartData = ['labels' => $awardedLabels, 'data' => $awardedData];
-        //awarded code end
+        // not workable logic
+            //awarded code start
+            // $awardedLabels = $prizes->pluck('title');
+            // $awardedData = ['12.5', '5.8', '35', '20.2', '16.5', '10'];
+            // $awardedChartData = ['labels' => $awardedLabels, 'data' => $awardedData];
+            //awarded code end
 
         return view('prizes.index', 
         [
             'prizes' => $prizes, 
-            'probabilityChartData' => $probabilityChartData, 
-            'awardedChartData' => $awardedChartData,
+            'probabilityChartData' => $probabilityChartData,
         ]);
     }
 
@@ -133,10 +137,36 @@ class PrizesController extends Controller
 
     public function simulate(Request $request)
     {
-
+        // tried but not working code
+        // method: random number generator in arbitrary probability distributaion fashion
+        /*
+        $prizes = Prize::all();
+        $probability = $prizes->pluck('probability');
+        $frequency = [2,13,6,17];
+        $total_probability = count($probability);
 
         for ($i = 0; $i < $request->number_of_prizes ?? 10; $i++) {
-            Prize::nextPrize();
+            Prize::nextPrize($probability, $frequency, $total_probability);
+        }
+        */
+
+        // for ($i = 0; $i < $request->number_of_prizes ?? 10; $i++) {
+        //     Prize::nextPrize();
+        // }
+
+        $prizes = Prize::all();
+        if (!empty($prizes)) {
+            AwardedPrizes::query()->update(['is_active' => 0]);
+            foreach ($prizes as $prize) {
+                $simulation_value = $request->number_of_prizes ?? 10;
+                $awarded = round(($prize->probability * $simulation_value) / 100);
+                AwardedPrizes::create([
+                    'prizes_id' => $prize->id, 
+                    'simulation_value' => $simulation_value,
+                    'awarded' => $awarded,
+                    'is_active' => 1
+                ]);
+            }
         }
 
         return to_route('prizes.index');
@@ -144,6 +174,7 @@ class PrizesController extends Controller
 
     public function reset()
     {
+        AwardedPrizes::query()->update(['is_active' => 0]);
         // TODO : Write logic here
         return to_route('prizes.index');
     }

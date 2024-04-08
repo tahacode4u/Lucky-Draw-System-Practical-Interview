@@ -12,42 +12,18 @@ class Prize extends Model
 
     protected $guarded = ['id'];
 
-
-    // tried but not working logic
-    // method: random number generator in arbitrary probability distributaion fashion
-    /*
-    public function findCeil ($arr, $r, $l, $h)
+    public  static function nextPrize($probability = array(), $total_prizes = "")
     {
-        $mid = 0;
-        while ($l < $h) {
-            $mid = $l + (($h - $l) >> 1);
-            $r = ($r > $arr[$mid]) ? ($l = $mid + 1) : ($h = $mid);
-        }
-        return ($arr[$l] >= $r) ? $l:-1;
-    }
-
-    public  static function nextPrize($arr, $freq, $n)
-    {
-        $prefix = [];
-        $i = 0;
-        $prefix[0] = $freq[0];
-        for ($i = 1; $i < $n; ++$i) {
-            $prefix[$i] = $prefix[$i - 1] + $freq[$i];
-        }
-
-        $r = floor(random() * $prefix[$n - 1]) + 1;
-        $indexc = findCeil($prefix, $r, 0, $n - 1);
-        return $arr[$indexc];
-    }
-    */
-
-    public  static function nextPrize()
-    {
-        // TODO: Implement nextPrize() logic here.
+        shuffle($probability);
+        $prize_id = $probability[0];
+        AwardedPrizes::create([
+            'prizes_id' => $prize_id,
+            'simulation_value' => $total_prizes,
+        ]);
     }
 
     public function getAwarded()
     {
-        return $this->hasOne(AwardedPrizes::class, 'id', 'prizes_id');
+        return $this->hasOne(AwardedPrizes::class, 'prizes_id', 'id');
     }
 }

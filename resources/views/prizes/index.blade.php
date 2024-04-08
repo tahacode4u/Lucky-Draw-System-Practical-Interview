@@ -32,7 +32,7 @@
                                 <td>{{ $i++ }}</td>
                                 <td>{{ $prize->title }}</td>
                                 <td>{{ $prize->probability }}</td>
-                                <td>{{ $prize->awarded }}</td>
+                                <td>{{ $prize->get_awarded_count }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a href="{{ route('prizes.edit', [$prize->id]) }}" class="btn btn-primary">Edit</a>
@@ -133,9 +133,9 @@
             plugins: [ChartDataLabels],
             type: 'doughnut',
             data: {
-                labels: @json($probabilityChartData['labels']),
+                labels: @json($awardedChartData['labels']),
                 datasets: [{
-                    data: @json($probabilityChartData['data']),
+                    data: @json($awardedChartData['data']),
                 }],
             },
             options: {

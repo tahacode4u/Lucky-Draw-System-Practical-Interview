@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('prizes_id');
             $table->integer('simulation_value');
-            $table->decimal('awarded', 10, 2)->default(0);
-            $table->integer('is_active')->default(1)->comment('0=In Active, 1=Active');
             $table->timestamps();
         });
 

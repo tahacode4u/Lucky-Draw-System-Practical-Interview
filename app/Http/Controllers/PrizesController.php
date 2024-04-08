@@ -48,7 +48,7 @@ class PrizesController extends Controller
             foreach ($awardedPrizes as $awardPrize) {
                 $percentage = ($awardPrize->awarded_count * 100) / $awardPrize->simulation_value;
                 $awardedLabels[] = $awardPrize->title . " (" . number_format($percentage, 2) . "%)";
-                $awardedData[] = $percentage;
+                $awardedData[] = number_format($percentage, 2);
             }
         }
 

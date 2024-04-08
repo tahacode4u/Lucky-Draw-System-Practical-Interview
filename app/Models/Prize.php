@@ -12,10 +12,10 @@ class Prize extends Model
 
     protected $guarded = ['id'];
 
-    public  static function nextPrize($probability = array(), $total_prizes = "")
+    public  static function nextPrize($prizesArr = array(), $total_prizes = "")
     {
-        shuffle($probability);
-        $prize_id = $probability[0];
+        shuffle($prizesArr);
+        $prize_id = $prizesArr[0];
         AwardedPrizes::create([
             'prizes_id' => $prize_id,
             'simulation_value' => $total_prizes,
